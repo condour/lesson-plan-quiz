@@ -39,7 +39,9 @@ disagree. They should require thinking, not a single grep hit.
 
 - **Multiple choice only** — lettered A/B/C/D (occasionally E). No
   open-ended "explain in your own words" prompts. This keeps grading
-  unambiguous in chat and in the saved file.
+  unambiguous in chat and in the saved file. You *can* opt for allowing more 
+  than one choice, but if you do this, specify how many answers are required 
+  (e.g. "Select **two** correct answers").
 - **Balanced distractors** — wrong options must be plausible and **similar
   in length and detail** to the correct one. Avoid the tell where the
   longest option is always right.
@@ -48,39 +50,47 @@ disagree. They should require thinking, not a single grep hit.
   of logic over ones answerable from a comment alone.
 - **Dead code and doc/code mismatches are fair game** — if the codebase has
   unimplemented features, misleading comments, or unused paths, quizzing on
-  them is valuable. Do not sanitize the quiz to hide them unless the user
-  asks.
+  them is valuable - they may be there for historical reasons but uncovering them
+  gives the dev a chance to raise a sidebar. Do not sanitize the quiz to hide them 
+  unless the user asks.
 
 ## Workflow
 
 1. **Scope it.** Confirm what's being tested: a commit (`git show <sha>`),
    a diff (`git diff main...HEAD`), or a feature/RFC. Read the actual
    diff/files before writing anything.
-2. **Size it.** Target **~30–45 minutes** total for a multi-module plan.
+2. **Decide what to teach.** Before breaking the material into subsections,
+   think carefully about the most salient points to cover. What are the key
+   concepts and associated terminology? What's the architecture? What design
+   decisions, compromises, and trade-offs were made? Who is most likely to take
+   this quiz, and what knowledge can we assume they already have? What must they
+   come away knowing? Let these answers drive the outline, not the shape of the
+   diff.
+3. **Size it.** Target **~30–45 minutes** total for a multi-module plan.
    One commit/PR → a single quiz file (5–10 MC questions) is fine; still
    split into a short "lesson" section (self-contained prose + MC) and a
    "code-reading" section (MC requiring the repo) if the topic warrants it.
    A multi-system feature → numbered modules `00-big-picture.md` through
    `NN-code-reading-round.md` plus `README.md`. See
    [templates.md](templates.md).
-3. **Write the lessons first.** For each module: objective → tour the
+4. **Write the lessons first.** For each module: objective → tour the
    mechanism (with inline snippets) → MC quiz. Verify each question is
    answerable from the module text before moving on.
-4. **Write the code-reading round last.** Harder synthesis: trace a path
+5. **Write the code-reading round last.** Harder synthesis: trace a path
    end-to-end, compare two implementations, spot a schema/prompt mismatch.
    Not answerable from the lesson text alone.
-5. **Run it live in chat.** Post questions with the answer key withheld.
+6. **Run it live in chat.** Post questions with the answer key withheld.
    User answers by letter (e.g. `B` or `1-B, 2-C`). Grade immediately, cite
    the actual code for wrong answers, keep a running score.
-6. **Always write the file too** — save under `docs/training/<topic_slug>/`
+7. **Always write the file too** — save under `docs/training/<topic_slug>/`
    per [templates.md](templates.md). Don't wait to be asked.
-7. **Write the answer key to a single plaintext file.** Put ALL modules'
+8. **Write the answer key to a single plaintext file.** Put ALL modules'
    answers in one `answers.md` in the same docs folder (e.g.
-   `docs/training/<topic_slug>/answers.md`). Plaintext, no encoding, no ROT13.
+   `docs/training/<topic_slug>/answers.md`).
    One line per question: `Q1: B — <brief reason>` (or just the letter). The
    agent withholds this file until the user has answered, then reveals/grades
    from it.
-8. **Commit on a feature branch**, never `main`/`master`. Ensure staged
+9. **Commit on a feature branch**, never `main`/`master`. Ensure staged
    files are formatted before committing.
 
 
@@ -119,11 +129,11 @@ understanding, not an interrogation.
 **Answer by letter.** Ask the user to respond `B` or `1-B, 2-C`. Terse input,
 fast flow.
 
-**Encourage self-check before decode.** Have the user answer by letter first,
-then decode that module's key and reconcile misses, then move on. (See the
+**Encourage self-check before revealing the answer.** Have the user answer 
+by letter first, then reveal the answer, then move on. (See the
 sidebar section for run-time feedback while this happens.)
 
-**Offer feedback at the end of EVERY module.** When the user has answered the
+**Solicit feedback at the end of EVERY module.** When the user has answered the
 last multiple-choice question of a module, explicitly pause to offer a chance
 for feedback on BOTH the code and the quiz itself — e.g. "Any thoughts on how
 this is built, or on the questions?" Do not just announce the score and move
@@ -176,11 +186,10 @@ on-demand), work through each sidebar item and mark it:
 Sidebar everything else. The cost of derailing a focused run is high; the cost
 of a temporarily-unresolved note is low.
 
-## Answer key file (plaintext, no ROT13)
+## Answer key file
 
-Store every module's answers in **one** plaintext `answers.md` in the same
-docs folder as the lessons. Do NOT encrypt, do NOT use ROT13, do not embed the
-answers inline in the lesson files.
+Store every module's answers in **one** `answers.md` in the same
+docs folder as the lessons.
 
 Format (keep it terse; reasons are optional but helpful):
 
@@ -197,17 +206,6 @@ Format (keep it terse; reasons are optional but helpful):
 ...
 ```
 
-Why plaintext and separate:
-
-- **No refusal surface.** Encoding answers (ROT13 or otherwise) sometimes
-  triggers safety refusals for looking like obfuscation. Plaintext eliminates
-  it entirely.
-- **No formatter footguns.** Encoded blocks get corrupted by markdown
-  formatters (list markers, line reflow). A plaintext answers file can't be.
-- **Simpler.** One terse file, easy to maintain and read. The separation from
-  the lesson (a different file) is what prevents accidental spoilers while
-  skimming — same protection encoding gave, without the cleverness.
-
 **Withholding.** When running the quiz live, do NOT show the answers file until
 the user has committed to an answer. Grade from it as you go, then reveal.
 
@@ -219,4 +217,3 @@ the user has committed to an answer. Grade from it as you go, then reveal.
 - [templates.md](templates.md) — single-quiz and multi-module templates
 - Any existing `docs/training/` entries in the current repo — use the most
   recent one as a structural reference
-
