@@ -30,12 +30,19 @@ def figurize(m):
     return "<<<FIG>>>" + media + "<<<ENDFIG>>>"
 
 body = re.sub(r'<img\s+src="(?P<src>[^"]+)"\s+alt="(?P<alt>[^"]*)"[^>]*?/?>', figurize, body, flags=re.S)
-# a paragraph that is only an image becomes a <figure>; an immediately following
-# all-italic paragraph becomes its <figcaption>
-body = re.sub(
-    r'<p><<<FIG>>>(?P<m>.*?)<<<ENDFIG>>></p>\s*<p><em>(?P<cap>.*?)</em></p>',
-    lambda m: f'<figure>{m.group("m")}<figcaption>{m.group("cap")}</figcaption></figure>',
-    body, flags=re.S)
+
+
+# Captions are explicit: a ::: caption ::: fenced div. Pandoc renders it as
+# <div class="caption">. When one directly follows an image or code block,
+# fold the pair into <figure>/<figcaption>; otherwise style it where it stands.
+CAP = r'<div class="caption">\s*<p>(?P<cap>.*?)</p>\s*</div>'
+body = re.sub(r'<p><<<FIG>>>(?P<m>.*?)<<<ENDFIG>>></p>\s*' + CAP,
+              lambda m: f'<figure>{m.group("m")}<figcaption>{m.group("cap")}</figcaption></figure>',
+              body, flags=re.S)
+body = re.sub(r'(?P<pre><pre\b.*?</pre>)\s*' + CAP,
+              lambda m: f'<figure class="code">{m.group("pre")}'
+                        f'<figcaption>{m.group("cap")}</figcaption></figure>',
+              body, flags=re.S)
 body = re.sub(r'<p><<<FIG>>>(.*?)<<<ENDFIG>>></p>',
               lambda m: f'<figure>{m.group(1)}</figure>', body, flags=re.S)
 
@@ -62,7 +69,7 @@ open(os.path.join(OUT, "index.html"), "w").write(page)
 import shutil
 n = 0
 for f in sorted(os.listdir(IMGD)):
-    if f.endswith(".png"):
+    if f.lower().endswith((".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg")):
         shutil.copy2(os.path.join(IMGD, f), os.path.join(OUT, "images", f)); n += 1
 print("title:", title)
 print("images copied:", n)
