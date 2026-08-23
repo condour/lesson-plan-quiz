@@ -38,7 +38,7 @@ When you ask (e.g. *"quiz me on this change"* / *"make me a lesson plan"* /
    content and questions that depend on how the note resolves, and tells you when
    something is foundational enough to abort over. Reconcile at a boundary you
    pick — end of module, end of run, or on demand — and triage each item:
-   **fix now**, **accept**, **defer**, or **dismiss**.
+   **fix now**, **accept**, or **defer**.
 8. **Commits the training docs** on a feature branch, so the knowledge lives
    beside the code.
 

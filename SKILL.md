@@ -174,12 +174,11 @@ sidebar"), the agent MUST:
 on-demand), work through each sidebar item and mark it:
 - **Fix now** — rewrite the code or quiz to match the concern.
 - **Accept** — inspect the agent's choice, understand the tradeoff, and
-  consciously ratify it even if you'd have done it differently. This is not
-  dismissal: you engaged with the design and chose to keep it. It's one of the
-  most valuable outcomes, because it's expertise *making a judgment*, not
-  blindly trusting the agent.
+  consciously ratify it even if you'd have done it differently. Waving a note
+  away without looking is not the same thing: Accept means you engaged with the
+  design and chose to keep it. It's one of the most valuable outcomes, because
+  it's expertise *making a judgment*, not blindly trusting the agent.
 - **Defer** — park to a real issue list / follow-up session.
-- **Dismiss** — not worth acting on.
 
 **Interrupt-vs-sidebar heuristic.** Only interrupt immediately for
 *foundation-level* flaws (upstream design that everything else depends on).
