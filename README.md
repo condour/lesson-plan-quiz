@@ -8,26 +8,39 @@ job of writing code. This skill turns every PR into a classroom: the same agent
 that shipped a feature builds a self-paced lesson plan that verifies you
 actually understand it before you approve it.
 
-> The companion explainer: *"Knowing is Half the Battle"* (link to article).
+> The companion explainer: *"Pop Quiz, Hotshot: A Method for Agent-driven Code
+> Review"* — <https://condour.github.io/lesson-plan-quiz/>
 
 ## What it does
 
 When you ask (e.g. *"quiz me on this change"* / *"make me a lesson plan"* /
 *"make sure I understand this before I ship it"*), the agent:
 
-1. **Sizes** a lesson plan to the change — a single PR gets one quiz; a feature
-   gets a multi-module course (`00-big-picture.md` … `NN-code-reading-round.md`),
-   ~30–45 minutes total.
-2. **Writes self-contained modules.** Each module teaches one concern with code
+1. **Scopes the change** — a commit, a diff, or a feature — and reads the actual
+   code before writing anything.
+2. **Decides what to teach.** Which concepts matter, what the architecture is,
+   which trade-offs were made, and what you already know. Those answers drive
+   the outline, not the shape of the diff.
+3. **Sizes** the plan — a single PR gets one quiz; a feature gets a multi-module
+   course (`00-big-picture.md` … `NN-code-reading-round.md`), ~30–45 minutes.
+4. **Writes self-contained modules.** Each module teaches one concern with code
    quoted inline, then ends with multiple-choice questions answerable from that
-   module alone.
-3. **Adds a "final boss" round.** The last module forces you to actually open
+   module alone. (Multi-select is allowed, as long as the question says how many
+   answers to pick.)
+5. **Adds a "final boss" round.** The last module forces you to actually open
    the code and trace logic across files — not just re-read the lesson.
-4. **Runs it live in chat.** One question at a time, key withheld, graded
-   immediately with cites to the real code.
-5. **Takes feedback via a "sidebar."** Park design critiques as you go, reconcile
-   them at the end — and the agent rewrites code *or* the quiz to match.
-6. **Commits the training docs** so the knowledge lives beside the code.
+6. **Runs it live in chat.** The full module text first, then one question at a
+   time, key withheld, graded immediately with cites to the real code. It pauses
+   at the end of every module to ask what you thought — of the code *and* of the
+   questions.
+7. **Takes feedback via a "sidebar."** Park a concern without derailing the run.
+   The list is agent-visible, so it records the note verbatim, flags later lesson
+   content and questions that depend on how the note resolves, and tells you when
+   something is foundational enough to abort over. Reconcile at a boundary you
+   pick — end of module, end of run, or on demand — and triage each item:
+   **fix now**, **accept**, **defer**, or **dismiss**.
+8. **Commits the training docs** on a feature branch, so the knowledge lives
+   beside the code.
 
 The answer key is a single plaintext `answers.md` — withheld until you've
 answered, so you reconcile honestly rather than pattern-matching.
@@ -36,8 +49,10 @@ answered, so you reconcile honestly rather than pattern-matching.
 
 - `SKILL.md` — the skill itself (frontmatter + full instructions)
 - `templates.md` — single-quiz and multi-module templates
-- `examples/` — a real worked example: the training docs generated for the
-  `years` web game (4 modules + final boss + answers.md)
+- `examples/years-web-game/` — a real worked example: the training docs
+  generated for the `years` web game (four lesson modules, a code-reading round,
+  and a shared `answers.md`)
+- `docs/` — the companion article, published via GitHub Pages
 
 ## Install
 
