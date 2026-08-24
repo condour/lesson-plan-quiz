@@ -20,7 +20,7 @@
 </head>
 <body>
 <main>
-<figure><img class="shot" src="images/yolo_perspective.jpg" alt="" loading="lazy"><<<ENDFIG>>></p>
+<figure><img class="shot" src="images/yolo_perspective.jpg" alt="" loading="lazy"></figure>
 <h1 id="pop-quiz-hotshot-a-method-for-agent-driven-code-review">Pop Quiz, Hotshot: A Method for Agent-driven Code Review</h1>
 <p><strong>It started so small.</strong> We started accepting code suggestions through Co-pilot. Then, we started having more involved conversations with the LLM, painstakingly copying blocks of code out of a chat window as they were generated. Then, we let it write into the files. Then one day we said: ok, here’s <code>git</code> and <code>gh</code> — make a PR.</p>
 <p>We’re not going back. We’ve taken the student driver sticker off the bumper, and started looking out the window, even on the highway. And it’s mostly working. We’ve vastly increased our delivery speed, and frankly, the agent is writing better comments and documentation than we would.</p>
@@ -70,7 +70,7 @@ seenByTitle.add(r.title);</code></pre>
 <p>So, no code change needed, but we made a note to clarify the possible answers. And we moved on.</p>
 <figure><img class="shot" src="images/lion_king.jpg" alt="image comparing live action disney remake of the Lion King to the original" loading="lazy"><figcaption>the Circle of Life, ruining my game logic</figcaption></figure>
 <p>I didn’t get very far before I realized we had another problem. The eagle-eyed among you may have noticed the line <code>roundId: crypto.randomUUID()</code> earlier, in the first snippet. Originally, that didn’t do anything at all - probably something the agent thought it would need, then never used. But while moving the assessment to the backend, the agent gave it a job, as revealed by this question:</p>
-<p><<<FIG>>><picture><source srcset="images/roundid-question.png" media="(prefers-color-scheme: dark)"><img src="images/roundid-question-light.png" alt="Transcript excerpt: the agent asks which statement is true about how the true release years are handled in the /api/round payload. The correct option names the movie-to-year truth being kept server-side keyed by roundId." loading="lazy"></picture></figure>
+<figure><picture><source srcset="images/roundid-question.png" media="(prefers-color-scheme: dark)"><img src="images/roundid-question-light.png" alt="Transcript excerpt: the agent asks which statement is true about how the true release years are handled in the /api/round payload. The correct option names the movie-to-year truth being kept server-side keyed by roundId." loading="lazy"></picture></figure>
 <p>So after moving state to the backend, every time a user started the round, the server would make up the id, write the answers into a running list in memory, and hand the id to the frontend. It would then use that <code>roundId</code> to look up the answers and mark them. In fixing the previous problem it created a new complication - state in the backend that needed to be managed.</p>
 <p>This had several downsides:</p>
 <ul>

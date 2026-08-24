@@ -39,27 +39,34 @@ def figurize(m):
                  '</picture>')
     else:
         media = f'<img class="shot" src="images/{name}" alt="{alt}" loading="lazy">'
-    return "<<<FIG>>>" + media + "<<<ENDFIG>>>"
+    return media
 
 # alt may be absent entirely: pandoc drops the attribute when the alt text is
 # empty, as it is for a purely decorative image.
 body = re.sub(r'<img\s+src="(?P<src>[^"]+)"(?:\s+alt="(?P<alt>[^"]*)")?[^>]*?/?>',
               figurize, body, flags=re.S)
 
+# Captions are explicit: a ::: caption ::: fenced div, which pandoc renders as
+# <div class="caption">. Where one directly follows an image or a code block,
+# fold the pair into <figure>/<figcaption>.
+#
+# Both patterns below are structurally bounded - MEDIA cannot cross a ">" or a
+# </picture>, and only whitespace may sit between the parts - so a match can
+# never span from one element to a distant one.
+MEDIA = r'(?P<m><picture>.*?</picture>|<img\b[^>]*>)'
+CAP   = r'<div class="caption">\s*<p>(?P<cap>.*?)</p>\s*</div>'
 
-# Captions are explicit: a ::: caption ::: fenced div. Pandoc renders it as
-# <div class="caption">. When one directly follows an image or code block,
-# fold the pair into <figure>/<figcaption>; otherwise style it where it stands.
-CAP = r'<div class="caption">\s*<p>(?P<cap>.*?)</p>\s*</div>'
-body = re.sub(r'<p><<<FIG>>>(?P<m>.*?)<<<ENDFIG>>></p>\s*' + CAP,
+body = re.sub(r'<p>\s*' + MEDIA + r'\s*</p>\s*' + CAP,
               lambda m: f'<figure>{m.group("m")}<figcaption>{m.group("cap")}</figcaption></figure>',
               body, flags=re.S)
 body = re.sub(r'(?P<pre><pre\b.*?</pre>)\s*' + CAP,
               lambda m: f'<figure class="code">{m.group("pre")}'
                         f'<figcaption>{m.group("cap")}</figcaption></figure>',
               body, flags=re.S)
-body = re.sub(r'<p><<<FIG>>>(.*?)<<<ENDFIG>>></p>',
-              lambda m: f'<figure>{m.group(1)}</figure>', body, flags=re.S)
+body = re.sub(r'<p>\s*' + MEDIA + r'\s*</p>',
+              lambda m: f'<figure>{m.group("m")}</figure>', body, flags=re.S)
+
+assert "FIG>>>" not in body, "stray figure marker survived"
 
 first_img = re.search(r'<img[^>]+src="(?P<src>[^"]+)"', body)
 og_image = SITE + first_img.group("src") if first_img else ""
