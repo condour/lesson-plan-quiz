@@ -1,7 +1,7 @@
 # lesson-plan-quiz
 
-Have an AI agent **teach you the code it just wrote** — with a lesson plan, a
-multiple-choice quiz, and a commit history you can see the improvement in.
+Have an AI agent **teach you the code it just wrote** — with a lesson plan and
+multiple-choice quizzes.
 
 Developers are experts, and we can *remain* experts while automating the actual
 job of writing code. This skill turns every PR into a classroom: the same agent
