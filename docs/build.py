@@ -1,5 +1,10 @@
 import os, re, subprocess, html
 
+SITE = "https://condour.github.io/lesson-plan-quiz/"
+# Shown under the title on Slack/LinkedIn/etc. Aim for ~150 characters.
+DESCRIPTION = ("A method for reviewing agent-written code: have the agent build a lesson "
+               "plan, quiz you on what it shipped, and rewrite the parts you push back on.")
+
 ART  = os.path.expanduser("~/article/knowing-is-half-the-battle.md")
 IMGD = os.path.expanduser("~/article/images")
 OUT  = os.path.expanduser("~/lesson-plan-quiz-repo/docs")
@@ -8,15 +13,22 @@ os.makedirs(os.path.join(OUT, "images"), exist_ok=True)
 md = open(ART).read()
 title = re.search(r'^#\s+(.+)$', md, re.M).group(1).strip()
 
+# Prettier does not understand pandoc fenced divs: with proseWrap "never" it
+# joins "::: caption / text / :::" onto a single line, which pandoc then emits
+# as literal text. Normalise that back to the block form before parsing.
+md = re.sub(r'^:::[ \t]*caption[ \t]+(?P<cap>.+?)[ \t]*:::[ \t]*$',
+            lambda m: "::: caption\n" + m.group("cap") + "\n:::",
+            md, flags=re.M)
+
 body = subprocess.run(
     ["pandoc","-f","markdown+smart-implicit_figures","-t","html5","--no-highlight","--wrap=none"],
     input=md, capture_output=True, text=True, check=True).stdout
 
-# drop the h1 (the template renders it) and pair each image with its caption
-body = re.sub(r'<h1[^>]*>.*?</h1>\s*', '', body, count=1, flags=re.S)
+# The h1 stays where the markdown puts it, so anything above it (a hero image,
+# say) keeps its position. `title` is used only for the <title> tag.
 
 def figurize(m):
-    alt, src = m.group("alt"), m.group("src")
+    alt, src = (m.group("alt") or ""), m.group("src")
     name = os.path.basename(src)
     stem, ext = os.path.splitext(name)
     light = os.path.join(IMGD, stem + "-light" + ext)
@@ -29,7 +41,10 @@ def figurize(m):
         media = f'<img class="shot" src="images/{name}" alt="{alt}" loading="lazy">'
     return "<<<FIG>>>" + media + "<<<ENDFIG>>>"
 
-body = re.sub(r'<img\s+src="(?P<src>[^"]+)"\s+alt="(?P<alt>[^"]*)"[^>]*?/?>', figurize, body, flags=re.S)
+# alt may be absent entirely: pandoc drops the attribute when the alt text is
+# empty, as it is for a purely decorative image.
+body = re.sub(r'<img\s+src="(?P<src>[^"]+)"(?:\s+alt="(?P<alt>[^"]*)")?[^>]*?/?>',
+              figurize, body, flags=re.S)
 
 
 # Captions are explicit: a ::: caption ::: fenced div. Pandoc renders it as
@@ -46,18 +61,35 @@ body = re.sub(r'(?P<pre><pre\b.*?</pre>)\s*' + CAP,
 body = re.sub(r'<p><<<FIG>>>(.*?)<<<ENDFIG>>></p>',
               lambda m: f'<figure>{m.group(1)}</figure>', body, flags=re.S)
 
+first_img = re.search(r'<img[^>]+src="(?P<src>[^"]+)"', body)
+og_image = SITE + first_img.group("src") if first_img else ""
+og = ""
+if og_image:
+    og = (f'<meta property="og:image" content="{og_image}">\n'
+          f'<meta name="twitter:image" content="{og_image}">\n'
+          '<meta name="twitter:card" content="summary_large_image">\n')
+else:
+    og = '<meta name="twitter:card" content="summary">\n'
+
 page = f"""<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(title)}</title>
+<meta name="description" content="{html.escape(DESCRIPTION)}">
+<link rel="canonical" href="{SITE}">
+<meta property="og:type" content="article">
+<meta property="og:url" content="{SITE}">
+<meta property="og:title" content="{html.escape(title)}">
+<meta property="og:description" content="{html.escape(DESCRIPTION)}">
+{og}<meta name="twitter:title" content="{html.escape(title)}">
+<meta name="twitter:description" content="{html.escape(DESCRIPTION)}">
 <meta name="color-scheme" content="dark light">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <main>
-<h1>{html.escape(title)}</h1>
 {body}
 </main>
 </body>

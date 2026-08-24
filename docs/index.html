@@ -4,17 +4,29 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pop Quiz, Hotshot: A Method for Agent-driven Code Review</title>
+<meta name="description" content="A method for reviewing agent-written code: have the agent build a lesson plan, quiz you on what it shipped, and rewrite the parts you push back on.">
+<link rel="canonical" href="https://condour.github.io/lesson-plan-quiz/">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://condour.github.io/lesson-plan-quiz/">
+<meta property="og:title" content="Pop Quiz, Hotshot: A Method for Agent-driven Code Review">
+<meta property="og:description" content="A method for reviewing agent-written code: have the agent build a lesson plan, quiz you on what it shipped, and rewrite the parts you push back on.">
+<meta property="og:image" content="https://condour.github.io/lesson-plan-quiz/images/yolo_perspective.jpg">
+<meta name="twitter:image" content="https://condour.github.io/lesson-plan-quiz/images/yolo_perspective.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pop Quiz, Hotshot: A Method for Agent-driven Code Review">
+<meta name="twitter:description" content="A method for reviewing agent-written code: have the agent build a lesson plan, quiz you on what it shipped, and rewrite the parts you push back on.">
 <meta name="color-scheme" content="dark light">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <main>
-<h1>Pop Quiz, Hotshot: A Method for Agent-driven Code Review</h1>
+<figure><img class="shot" src="images/yolo_perspective.jpg" alt="" loading="lazy"><<<ENDFIG>>></p>
+<h1 id="pop-quiz-hotshot-a-method-for-agent-driven-code-review">Pop Quiz, Hotshot: A Method for Agent-driven Code Review</h1>
 <p><strong>It started so small.</strong> We started accepting code suggestions through Co-pilot. Then, we started having more involved conversations with the LLM, painstakingly copying blocks of code out of a chat window as they were generated. Then, we let it write into the files. Then one day we said: ok, here’s <code>git</code> and <code>gh</code> — make a PR.</p>
 <p>We’re not going back. We’ve taken the student driver sticker off the bumper, and started looking out the window, even on the highway. And it’s mostly working. We’ve vastly increased our delivery speed, and frankly, the agent is writing better comments and documentation than we would.</p>
 <p>Sure, we’re watching the process. We’re making the architectural decisions, putting tests in place to avoid regressions, reading the diffs. But the agent is writing more than we can read. It’s making some architectural decisions on its own. It’s interpreting business logic.</p>
-<figure><img class="shot" src="images/food-chocolate.gif" alt="Lucy eating chocolates off the assembly line" loading="lazy"><figcaption>For some reason, Github keeps going down</figcaption></figure>
 <p>Are we still in control?</p>
+<figure><img class="shot" src="images/food-chocolate.gif" alt="Lucy eating chocolates off the assembly line" loading="lazy"><figcaption>For some reason, Github keeps going down</figcaption></figure>
 <h2 id="every-pr-is-a-classroom">Every PR is a classroom</h2>
 <p>We can be. To paraphrase Homer, AI can be the cause of, and solution to, badly designed code.</p>
 <p>I figured this out while first implementing Kafka consumers at work. The agent did its thing and everything seemed to be working well, but I really had no idea what it had built; it was a new technology to me. So rather than stare at the PR cold, I told the agent: <em>Make me a lesson plan. Teach me what you just did. Then quiz me!</em></p>
@@ -58,7 +70,7 @@ seenByTitle.add(r.title);</code></pre>
 <p>So, no code change needed, but we made a note to clarify the possible answers. And we moved on.</p>
 <figure><img class="shot" src="images/lion_king.jpg" alt="image comparing live action disney remake of the Lion King to the original" loading="lazy"><figcaption>the Circle of Life, ruining my game logic</figcaption></figure>
 <p>I didn’t get very far before I realized we had another problem. The eagle-eyed among you may have noticed the line <code>roundId: crypto.randomUUID()</code> earlier, in the first snippet. Originally, that didn’t do anything at all - probably something the agent thought it would need, then never used. But while moving the assessment to the backend, the agent gave it a job, as revealed by this question:</p>
-<figure><picture><source srcset="images/roundid-question.png" media="(prefers-color-scheme: dark)"><img src="images/roundid-question-light.png" alt="Transcript excerpt: the agent asks which statement is true about how the true release years are handled in the /api/round payload. The correct option names the movie-to-year truth being kept server-side keyed by roundId." loading="lazy"></picture></figure>
+<p><<<FIG>>><picture><source srcset="images/roundid-question.png" media="(prefers-color-scheme: dark)"><img src="images/roundid-question-light.png" alt="Transcript excerpt: the agent asks which statement is true about how the true release years are handled in the /api/round payload. The correct option names the movie-to-year truth being kept server-side keyed by roundId." loading="lazy"></picture></figure>
 <p>So after moving state to the backend, every time a user started the round, the server would make up the id, write the answers into a running list in memory, and hand the id to the frontend. It would then use that <code>roundId</code> to look up the answers and mark them. In fixing the previous problem it created a new complication - state in the backend that needed to be managed.</p>
 <p>This had several downsides:</p>
 <ul>
