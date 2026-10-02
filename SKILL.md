@@ -2,12 +2,11 @@
 name: lesson-plan-quiz
 description: >-
   Builds a lesson plan and/or quiz that verifies understanding of a feature,
-  commit, or PR before it ships, then commits it as a training doc under
-  docs/training/ with a shared plaintext answers.md answer key.
-  Use when the user asks to be quizzed on a change, wants to make sure they
-  understand a PR/feature before releasing it, asks for a "lesson plan," or
-  says things like "quiz me on this," "test my understanding," or "make sure
-  I get this before I ship it."
+  commit, or PR before it ships, then optionally commits it as a training doc 
+  with a shared plaintext answers.md answer key. Use when the user asks to be 
+  quizzed on a change, wants to make sure they understand a PR/feature before 
+  releasing it, asks for a "lesson plan," or says things like "quiz me on this," 
+  "test my understanding," or "make sure I get this before I ship it."
 ---
 
 # Lesson plan + quiz
@@ -45,6 +44,8 @@ disagree. They should require thinking, not a single grep hit.
 - **Balanced distractors** — wrong options must be plausible and **similar
   in length and detail** to the correct one. Avoid the tell where the
   longest option is always right.
+- **LLM is bad at choosing random** - use the shell script dice.sh to choose the letter for 
+  the correct answer.
 - **Cite real identifiers** — function/class/file names, config values,
   exact conditions. Prefer questions whose answer hinges on a specific line
   of logic over ones answerable from a comment alone.
